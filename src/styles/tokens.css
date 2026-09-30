@@ -1,0 +1,99 @@
+/*
+ * Design tokens — extracted from https://www.simplified.org/ (fetched 2026-09-21).
+ *
+ * Source of truth for the app's fonts, colours, radii and shadows (PRD §3b).
+ * These are wired into Tailwind v4 via @theme in src/app/globals.css.
+ *
+ * FONTS (from the site's @font-face + next/font output):
+ *   - Body + headings: "Geist" (variable 100–900) — loaded via next/font/google in layout.tsx.
+ *   - Mono: "Geist Mono".
+ *   - The site also uses a commercial display face, "Britti Sans" (britti-sans-*.otf),
+ *     for a few marketing headlines. It isn't free to redistribute, so Geist (the site's
+ *     primary face) is the stand-in for headings here. No serif fonts anywhere — see --font-serif.
+ *
+ * COLOURS (site CSS custom properties + most-used values):
+ *   --color-primary:#e95e32  --color-primary-bg:#f6f5f3
+ *   primary gradient: linear-gradient(90deg,#e95e32 3.12%,#bd4f2c 70.19%)
+ *   text #23282f / #111111 · muted #4a5464 · blue accent #00b2ff · indigo accent #4f46e5
+ *
+ * RADII: buttons are pill-shaped (rounded-full); cards use ~16px; base radius 0.625rem.
+ * SHADOWS: soft card shadow; branded orange glow on the primary CTA (0 12px 24px #e95e3238).
+ */
+
+:root {
+  /* ---- Brand palette (raw) ---- */
+  --sf-orange: #e95e32; /* primary button */
+  --sf-orange-dark: #bd4f2c; /* hover / gradient end */
+  --sf-orange-gradient: linear-gradient(90deg, #e95e32 3.12%, #bd4f2c 70.19%);
+  --sf-bg: #f6f5f3; /* soft warm page background */
+  --sf-surface: #ffffff; /* white cards */
+  --sf-ink: #23282f; /* body text */
+  --sf-ink-strong: #111111; /* headings */
+  --sf-muted: #4a5464; /* secondary text */
+  --sf-blue: #00b2ff; /* dark-blue / bright-blue accent */
+  --sf-indigo: #4f46e5; /* purple accent */
+  --sf-navy: #0f1118;
+  --sf-border: #e6e3dd; /* warm neutral border */
+  --sf-neutral-100: #f1f0ed; /* soft neutral fill (chips, secondary) */
+
+  /* ---- Fonts ---- */
+  --font-sans:
+    var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono:
+    var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco,
+    Consolas, "Liberation Mono", monospace;
+  --font-heading: var(--font-sans);
+  /* No serif anywhere: font-serif intentionally resolves to the sans stack. */
+  --font-serif: var(--font-sans);
+
+  /* ---- Radii ---- */
+  --radius: 0.625rem; /* base (site default) */
+  --radius-button: 9999px; /* pill buttons (rounded-full) */
+  --radius-card: 16px; /* cards */
+
+  /* ---- Shadows ---- */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 10px 24px rgba(35, 40, 47, 0.05);
+  --shadow-cta: 0 12px 24px rgba(233, 94, 50, 0.22); /* branded orange glow */
+
+  /* ---- Semantic tokens (map shadcn/ui + app to the brand) ---- */
+  --background: var(--sf-bg);
+  --foreground: var(--sf-ink);
+  --card: var(--sf-surface);
+  --card-foreground: var(--sf-ink);
+  --popover: var(--sf-surface);
+  --popover-foreground: var(--sf-ink);
+  --primary: var(--sf-orange);
+  --primary-foreground: #ffffff;
+  --secondary: var(--sf-neutral-100);
+  --secondary-foreground: var(--sf-navy);
+  --muted: var(--sf-neutral-100);
+  --muted-foreground: var(--sf-muted);
+  --accent: var(--sf-neutral-100);
+  --accent-foreground: var(--sf-navy);
+  --destructive: #d81e1e;
+  --border: var(--sf-border);
+  --input: var(--sf-border);
+  --ring: var(--sf-orange);
+}
+
+.dark {
+  --background: var(--sf-navy);
+  --foreground: #f6f5f3;
+  --card: #171a21;
+  --card-foreground: #f6f5f3;
+  --popover: #171a21;
+  --popover-foreground: #f6f5f3;
+  --primary: var(--sf-orange);
+  --primary-foreground: #ffffff;
+  --secondary: #23282f;
+  --secondary-foreground: #f6f5f3;
+  --muted: #23282f;
+  --muted-foreground: #c1c8d1;
+  --accent: #23282f;
+  --accent-foreground: #f6f5f3;
+  --destructive: #fb2c36;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: var(--sf-orange);
+}

@@ -1,0 +1,5 @@
+---
+description: AI Ad Studio project rules
+alwaysApply: true
+---
+Read spec/01-PRD.md and spec/02-ARCHITECTURE.md before any task. Screen copy in the PRD is final unless I say otherwise. Follow the mobile UX rules in PRD §7 exactly (390px design width, fixed bottom primary button, 100dvh, 16px+ inputs, Framer Motion 220ms slide+fade, reduced-motion respected). One screen = one file under src/components/flow/screens. Never put API keys in client code. Validate all API bodies with zod. Prefer server components; use client components only where interaction needs them.

@@ -1,14 +1,13 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AUDIENCE_OPTIONS, LEVER_OPTIONS, VIBE_OPTIONS } from "@/lib/brief";
 import { REFINE_MAX_CHARS } from "@/lib/prompts";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { useFlow } from "../FlowShell";
-import LightLoginSheet from "../LightLoginSheet";
 import { PLACEHOLDER_AD } from "../placeholderAd";
 import { PrimaryButton, StageLayout } from "../StageLayout";
 
@@ -27,25 +26,14 @@ const LEVER_CHIP: Record<string, string> = {
 export default function FirstAd() {
   const { data, update, next } = useFlow();
   const name = data.firstName?.trim();
-  const [saveOpen, setSaveOpen] = useState(false);
   const [tweakOpen, setTweakOpen] = useState(false);
-  const [toast, setToast] = useState(false);
-
-  // Already identified (via ?e= silent creation or a previous save) → toast.
-  // Anonymous → the light-login bottom sheet. See spec/01-PRD.md §4 Screen 11.
-  const identified = Boolean(
-    data.identified || data.emailPrefill || data.savedEmail,
-  );
-
-  function handleSave() {
-    if (identified) {
-      setToast(true);
-    } else {
-      setSaveOpen(true);
-    }
-  }
 
   const gen = data.generation;
+  // Email login is off for now: the secondary action downloads the PNG
+  // directly (ownership is checked against the anon_id cookie).
+  const downloadHref = gen
+    ? `/api/ads/${gen.adId}/download`
+    : PLACEHOLDER_AD.imageSrc;
   // Real creative + copy when present; placeholder otherwise (dev / back-nav).
   const imageUrl = gen?.imageUrl ?? PLACEHOLDER_AD.imageSrc;
   const headline = gen?.concept.headline ?? PLACEHOLDER_AD.headline;
@@ -127,14 +115,16 @@ export default function FirstAd() {
               >
                 Tweak it
               </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleSave}
-                className="h-10 flex-1 rounded-full text-sm font-medium"
+              <a
+                href={downloadHref}
+                download
+                className={buttonVariants({
+                  variant: "outline",
+                  className: "h-10 flex-1 rounded-full text-sm font-medium",
+                })}
               >
-                Save my ad
-              </Button>
+                Download my ad
+              </a>
             </div>
           </div>
         }
@@ -153,22 +143,6 @@ export default function FirstAd() {
         />
       ) : null}
 
-      <LightLoginSheet
-        open={saveOpen}
-        onClose={() => setSaveOpen(false)}
-        title="Where should we save it?"
-        body="Pop your email in and your ad will be waiting for you."
-        cta="Save"
-        attachAnon
-        successTitle="Saved ✓"
-        successBody="A link to your ads is in your inbox."
-      />
-
-      <SavedToast
-        show={toast}
-        message="Saved to your account ✓"
-        onDone={() => setToast(false)}
-      />
     </>
   );
 }
@@ -274,43 +248,6 @@ function TweakSheet({
             </Button>
           </motion.div>
         </div>
-      ) : null}
-    </AnimatePresence>
-  );
-}
-
-/** A brief top toast for already-identified users (no sheet needed). */
-function SavedToast({
-  show,
-  message,
-  onDone,
-}: {
-  show: boolean;
-  message: string;
-  onDone: () => void;
-}) {
-  const reduce = useReducedMotion();
-
-  useEffect(() => {
-    if (!show) return;
-    const t = setTimeout(onDone, 2400);
-    return () => clearTimeout(t);
-  }, [show, onDone]);
-
-  return (
-    <AnimatePresence>
-      {show ? (
-        <motion.div
-          role="status"
-          initial={reduce ? { opacity: 0 } : { opacity: 0, y: -12 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={reduce ? { opacity: 0 } : { opacity: 0, y: -12 }}
-          transition={{ duration: reduce ? 0 : 0.22, ease: "easeOut" }}
-          className="fixed inset-x-0 top-[max(1rem,env(safe-area-inset-top))] z-50 mx-auto flex w-fit items-center gap-2 rounded-full bg-foreground px-4 py-2.5 text-sm font-medium text-background shadow-card"
-        >
-          <Check className="size-4" strokeWidth={2.5} />
-          {message}
-        </motion.div>
       ) : null}
     </AnimatePresence>
   );

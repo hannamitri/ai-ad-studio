@@ -24,17 +24,16 @@ import LeverLesson from "./screens/LeverLesson";
 import Lever from "./screens/Lever";
 import Vibe from "./screens/Vibe";
 import BriefReview from "./screens/BriefReview";
-import Bookmark from "./screens/Bookmark";
 import Software from "./screens/Software";
 import Generating from "./screens/Generating";
 import FirstAd from "./screens/FirstAd";
 import Instagram from "./screens/Instagram";
 import Payoff from "./screens/Payoff";
 
-// Bumped to v5 when the brand/goal split re-added a screen (Screen 2 → brand,
-// Screen 3 → goal). A stale v4 step index would point at a shifted screen, so
-// old state is intentionally dropped.
-const STORAGE_KEY = "aas-flow-state-v5";
+// Bumped to v6 when the Bookmark screen was dropped (the studio is hidden while
+// email login is off). A stale v5 step index would point at a shifted screen,
+// so old state is intentionally dropped.
+const STORAGE_KEY = "aas-flow-state-v6";
 
 /** The real ad produced by POST /api/generate (Screen 10 → 11 → 12 → 13). */
 export type GenerationResult = {
@@ -95,18 +94,19 @@ const SCREENS = [
   Lever, // 6 · Screen 7 (Q2)
   Vibe, // 7 · Screen 8 (Q3)
   BriefReview, // 8 · Screen 9
-  Bookmark, // 9 · Screen 10
-  Software, // 10 · Screen 11
-  Generating, // 11 · Screen 12
-  FirstAd, // 12 · Screen 13
-  Instagram, // 13 · Screen 14
-  Payoff, // 14 · Screen 15
+  // screens/Bookmark is left out while email login is off: it points at
+  // /studio, which still requires a session.
+  Software, // 9 · Screen 10
+  Generating, // 10 · Screen 11
+  FirstAd, // 11 · Screen 12
+  Instagram, // 12 · Screen 13
+  Payoff, // 13 · Screen 14
 ] as const;
 
 export const TOTAL_STEPS = SCREENS.length;
 
 /** The transient generating pause — auto-advances and drops out of history. */
-const GENERATING_STEP = 11;
+const GENERATING_STEP = 10;
 
 type FlowContextValue = {
   step: number;

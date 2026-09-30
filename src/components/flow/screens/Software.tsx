@@ -18,24 +18,6 @@ export default function Software() {
   function handleGenerate() {
     if (!canGenerate) return;
     update({ briefText: value });
-    // If `?e=` identified them, create the account silently before generating
-    // (no UI). See spec/01-PRD.md §4 Screen 9. Fire-and-forget: never block the
-    // generate step on it.
-    const email = data.emailPrefill?.trim();
-    if (email && !data.identified) {
-      update({ identified: true });
-      void fetch("/api/session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          firstName: data.firstName?.trim() || undefined,
-          source: data.src === "webinar" || data.src === "call" ? data.src : undefined,
-        }),
-      }).catch(() => {
-        // Silent — generation continues regardless.
-      });
-    }
     next();
   }
 

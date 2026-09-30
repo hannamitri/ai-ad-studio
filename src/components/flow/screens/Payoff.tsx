@@ -1,7 +1,6 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import AdSpendCalculator from "../AdSpendCalculator";
 import StarterQuotes from "../StarterQuotes";
@@ -9,7 +8,6 @@ import { BRAND } from "@/lib/brief";
 import type { Payoff as PayoffNumbers } from "@/lib/payoff";
 import CountUp from "../CountUp";
 import { useFlow } from "../FlowShell";
-import LightLoginSheet from "../LightLoginSheet";
 import { PLACEHOLDER_AD } from "../placeholderAd";
 import { PrimaryButton, StageLayout } from "../StageLayout";
 
@@ -77,10 +75,8 @@ function symbolFor(code: string): string {
 
 export default function Payoff() {
   const { data, config } = useFlow();
-  const router = useRouter();
   // 0 = Beat A only, 1 = + Beat B, 2 = + Beat C (close).
   const [beat, setBeat] = useState(0);
-  const [keepOpen, setKeepOpen] = useState(false);
 
   // Real payoff numbers when present; placeholder otherwise (dev / back-nav).
   const gen = data.generation;
@@ -113,20 +109,6 @@ export default function Payoff() {
     ? `/api/ads/${gen.adId}/download`
     : PLACEHOLDER_AD.imageSrc;
 
-  // Already identified → straight to the studio. Anonymous → light-login sheet
-  // ("so your ads follow you"), then on to the studio. See PRD §4 Screen 13.
-  const identified = Boolean(
-    data.identified || data.emailPrefill || data.savedEmail,
-  );
-
-  function handleKeepUsing() {
-    if (identified) {
-      router.push("/studio");
-    } else {
-      setKeepOpen(true);
-    }
-  }
-
   return (
     <>
       <StageLayout
@@ -149,13 +131,6 @@ export default function Payoff() {
               >
                 {callCtaLabel}
               </a>
-              <button
-                type="button"
-                onClick={handleKeepUsing}
-                className="flex h-12 w-full items-center justify-center rounded-full border border-border bg-background text-base font-medium transition-colors hover:bg-muted lg:w-auto lg:px-8"
-              >
-                Keep using the software
-              </button>
               <a
                 href={downloadHref}
                 download
@@ -166,21 +141,6 @@ export default function Payoff() {
             </div>
           )
         }
-      />
-
-      <LightLoginSheet
-        open={keepOpen}
-        onClose={() => {
-          setKeepOpen(false);
-          router.push("/studio");
-        }}
-        title="Enter your email so your ads follow you"
-        body="We'll keep everything you make in the studio tied to your email."
-        cta="Save & continue"
-        attachAnon
-        successTitle="You're all set ✓"
-        successBody="Your ads are tied to your email. A magic link is in your inbox."
-        doneLabel="Open the studio"
       />
     </>
   );
